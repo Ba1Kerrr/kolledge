@@ -9,7 +9,7 @@
 - pip
 
 ### Шаг 1: Клонирование репозитория
-1. git clone <repository-url>
+1. git clone https://github.com/Ba1Kerrr/kolledge
 2. cd fitlog
 ### Шаг 2: Создание виртуального окружения
 3. python -m venv venv
@@ -200,8 +200,4 @@
 
 1. Работу базы данных
 
-2. Аутентификацию пользователей
-
-3. Основные API endpoints
-
-4. Корректность данных
+2. Основные API endpoints
