@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FitLog - журнал тренировок</title>
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="top-bar">
+    <div class="logo">FITLOG</div>
+    <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><i class="fas fa-dumbbell"></i> FITLOG</div>
+      <button class="close-btn" id="closeBtn"><i class="fas fa-times"></i></button>
+    </div>
+    
+    <div class="sidebar-nav">
+      <a href="#"><i class="fas fa-home"></i> Главная</a>
+      <a href="#"><i class="fas fa-cogs"></i> Функционал</a>
+      <a href="#"><i class="fas fa-star"></i> Преимущества</a>
+      <a href="#"><i class="fas fa-comment"></i> Отзывы</a>
+      <a href="#"><i class="fas fa-info-circle"></i> О нас</a>
+      <a href="#"><i class="fas fa-phone"></i> Контакты</a>
+    </div>
+    
+    <div class="sidebar-footer">
+      <button class="btn-login" id="sidebarLoginBtn"><i class="fas fa-sign-in-alt"></i> Войти в аккаунт</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay"></div>
+  
+  <div class="auth-modal" id="authModal">
+    <div class="modal-header">
+      <h2><i class="fas fa-user-circle"></i> Вход в аккаунт</h2>
+      <button class="modal-close" id="modalCloseBtn"><i class="fas fa-times"></i></button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login"><i class="fas fa-sign-in-alt"></i> Вход</button>
+        <button class="auth-tab" data-tab="register"><i class="fas fa-user-plus"></i> Регистрация</button>
+      </div>
+      
+      <form id="loginForm" class="auth-form active">
+        <div class="form-group">
+          <label for="email"><i class="fas fa-envelope"></i> Email</label>
+          <div class="input-with-icon">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="email" placeholder="Ваш email" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="password"><i class="fas fa-lock"></i> Пароль</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" placeholder="Ваш пароль" required>
+            <button type="button" class="toggle-password" data-target="password">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="form-options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="rememberMe">
+              <span><i class="far fa-check-circle"></i> Запомнить меня</span>
+            </label>
+            <a href="#" class="forgot-password"><i class="fas fa-key"></i> Забыли пароль?</a>
+          </div>
+        </div>
+        
+        <button type="submit" class="auth-submit-btn"><i class="fas fa-sign-in-alt"></i> Войти в аккаунт</button>
+        
+        <div class="divider">
+          <span>или войти через</span>
+        </div>
+        
+        <div class="social-auth">
+          <button type="button" class="social-btn google-btn">
+            <i class="fab fa-google"></i> Google
+          </button>
+          <button type="button" class="social-btn facebook-btn">
+            <i class="fab fa-facebook-f"></i> Facebook
+          </button>
+        </div>
+      </form>
+      
+      <form id="registerForm" class="auth-form">
+        <div class="form-group">
+          <label for="regName"><i class="fas fa-user"></i> Имя</label>
+          <div class="input-with-icon">
+            <i class="fas fa-user"></i>
+            <input type="text" id="regName" placeholder="Ваше имя" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="regEmail"><i class="fas fa-envelope"></i> Email</label>
+          <div class="input-with-icon">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="regEmail" placeholder="Ваш email" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="regPassword"><i class="fas fa-lock"></i> Пароль</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="regPassword" placeholder="Придумайте пароль" required>
+            <button type="button" class="toggle-password" data-target="regPassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="password-hint">
+            Пароль должен содержать минимум 8 символов
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="confirmPassword"><i class="fas fa-lock"></i> Подтвердите пароль</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="confirmPassword" placeholder="Повторите пароль" required>
+            <button type="button" class="toggle-password" data-target="confirmPassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="terms" required>
+            <span><i class="far fa-file-alt"></i> Я соглашаюсь с Условиями</span>
+          </label>
+        </div>
+        
+        <button type="submit" class="auth-submit-btn"><i class="fas fa-user-plus"></i> Создать аккаунт</button>
+        
+        <div class="divider">
+          <span>или зарегистрироваться через</span>
+        </div>
+        
+        <div class="social-auth">
+          <button type="button" class="social-btn google-btn">
+            <i class="fab fa-google"></i> Google
+          </button>
+          <button type="button" class="social-btn facebook-btn">
+            <i class="fab fa-facebook-f"></i> Facebook
+          </button>
+        </div>
+      </form>
+    </div>
+    
+    <div class="modal-footer">
+      <i class="fas fa-exchange-alt"></i> Уже есть аккаунт? <a href="#" class="switch-to-login">Войти</a>
+    </div>
+  </div>
+
+  <header>
+    <div class="hero-content">
+      <h1 class="hero-title">
+        Ваш идеальный<br>фитнес-компаньон
+      </h1>
+      
+      <p class="hero-subtitle">
+        FitLog сочетает в себе дневник тренировок, трекер питания и систему анализа прогресса. Достигайте своих целей быстрее с помощью умных инструментов.
+      </p>
+      
+      <div class="hero-buttons">
+        <button class="btn-primary" id="heroLoginBtn"><i class="fas fa-play"></i> Начать тренироваться</button>
+        <a href="#" class="btn-secondary"><i class="fas fa-info-circle"></i> Подробнее о платформе</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <h2><i class="fas fa-trophy"></i> Наши преимущества</h2>
+      <div class="advantages-grid">
+        <div class="advantage-card">
+          <div class="icon-wrapper"><i class="fas fa-mobile-alt"></i></div>
+          <h3>Интуитивный интерфейс</h3>
+          <p>Понятное управление и красивая визуализация данных</p>
+        </div>
+        
+        <div class="advantage-card">
+          <div class="icon-wrapper"><i class="fas fa-chart-bar"></i></div>
+          <h3>Глубокая аналитика</h3>
+          <p>Подробные графики и статистика по всем метрикам</p>
+        </div>
+        
+        <div class="advantage-card">
+          <div class="icon-wrapper"><i class="fas fa-headset"></i></div>
+          <h3>Поддержка 24/7</h3>
+          <p>Помощь и консультации в любое время суток</p>
+        </div>
+        
+        <div class="advantage-card">
+          <div class="icon-wrapper"><i class="fas fa-sync-alt"></i></div>
+          <h3>Мгновенная синхронизация</h3>
+          <p>Работайте на всех устройствах одновременно</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section functionality">
+    <div class="container">
+      <h2><i class="fas fa-cogs"></i> Мощный функционал</h2>
+      <div class="func-cards">
+        <div class="func-card">
+          <div class="func-number"><i class="fas fa-running"></i></div>
+          <h3>Дневник тренировок</h3>
+          <p>Записывайте упражнения, подходы, повторения и веса. Отслеживайте прогресс с помощью графиков.</p>
+        </div>
+        
+        <div class="func-card">
+          <div class="func-number"><i class="fas fa-apple-alt"></i></div>
+          <h3>Контроль питания</h3>
+          <p>Подсчёт КБЖУ, сканер продуктов, шаблоны приёмов пищи, контроль дефицита/профицита.</p>
+        </div>
+        
+        <div class="func-card">
+          <div class="func-number"><i class="fas fa-chart-line"></i></div>
+          <h3>Анализ прогресса</h3>
+          <p>Графики силы, объёма, изменения веса, обхватов, процента жира и динамики за любой период.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section reviews">
+    <div class="container">
+      <h2><i class="fas fa-comment"></i> Отзывы пользователей</h2>
+      <div class="reviews-slider">
+        <div class="review-item">
+          <div class="review-header">
+            <img src="https://images.unsplash.com/photo-1494790108755-2616b786d49d?w=100&h=100&fit=crop&crop=faces" class="review-avatar" alt="Мария">
+            <div class="review-info">
+              <h4>Мария Иванова</h4>
+              <p>Фитнес-тренер, опыт 5 лет</p>
+            </div>
+          </div>
+          <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="review-text">
+            "FitLog изменил мой подход к тренировкам. Теперь все данные в одном месте, аналитика на высшем уровне. Рекомендую всем клиентам!"
+          </p>
+        </div>
+        
+        <div class="review-item">
+          <div class="review-header">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" class="review-avatar" alt="Алексей">
+            <div class="review-info">
+              <h4>Алексей Петров</h4>
+              <p>Программист, занимается 2 года</p>
+            </div>
+    
+          </div>
+          <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="review-text">
+            "Как разработчик ценю качественный UI/UX. FitLog - это шедевр. Удобно, красиво, функционально. За 3 месяца увидел реальный прогресс!"
+    
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about">
+    <div class="container">
+      <div class="about-content">
+        <p class="lead">
+          <i class="fas fa-users"></i> FitLog — это больше чем приложение,<br>это сообщество людей
+        </p>
+        
+    
+        <p>
+          Мы начали в 2024 году с простой идеи — создать идеальный инструмент для отслеживания фитнес-прогресса. Сегодня это полноценная платформа с тысячами пользователей.
+        </p>
+        
+        <div class="highlight">
+          <p>
+            <strong><i class="fas fa-bullseye"></i> Наша миссия:</strong><br>
+            Сделать фитнес доступным и понятным для каждого, независимо от уровня подготовки.
+          </p>
+        </div>
+        
+        <p>
+          Присоединяйтесь к сообществу людей, которые ценят свой прогресс и хотят достигать большего каждый день.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-content">
+    
+      <div class="footer-nav">
+        <a href="#"><i class="fas fa-info-circle"></i> О проекте</a>
+        <a href="#"><i class="fas fa-cogs"></i> Функции</a>
+        <a href="#"><i class="fas fa-tags"></i> Тарифы</a>
+        <a href="#"><i class="fas fa-blog"></i> Блог</a>
+        <a href="#"><i class="fas fa-phone"></i> Контакты</a>
+        <a href="#"><i class="fas fa-question-circle"></i> Помощь</a>
+      </div>
+      
+      <div class="copyright">
+        <i class="far fa-copyright"></i> 2024-2026 FitLog. Все права защищены.<br>
+    
+        <i class="fas fa-shield-alt"></i> Мы заботимся о ваших данных и приватности
+      </div>
+    </div>
+
+  </footer>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/utils.js"></script>
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/app.js"></script>
+
+
+
+</body>
+</html>

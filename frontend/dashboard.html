@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLog - Мой кабинет</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="nav-bar">
+        <a href="/" class="nav-logo">FITLOG</a>
+        <div class="nav-user">
+            <span id="currentUserEmail"></span>
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Выйти
+            </button>
+        </div>
+    </div>
+    
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="user-info">
+                <div class="welcome-text" id="welcomeText">Загрузка...</div>
+                <div class="user-email" id="userEmail"></div>
+            </div>
+        </div>
+        
+        <div class="dashboard-section">
+            <h2 class="section-title"><i class="fas fa-chart-line"></i> Статистика</h2>
+            <div class="stats-grid" id="statsGrid">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Загрузка статистики...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-section">
+            <div class="section-title">
+                <i class="fas fa-dumbbell"></i> Последние тренировки
+                <button class="btn-secondary" id="addWorkoutBtn" style="margin-left: auto;">
+                    <i class="fas fa-plus"></i> Добавить
+                </button>
+            </div>
+            <div class="workouts-list" id="workoutsList">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Загрузка тренировок...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-section">
+            <div class="section-title">
+                <i class="fas fa-bullseye"></i> Активные цели
+                <button class="btn-secondary" id="addGoalBtn" style="margin-left: auto;">
+                    <i class="fas fa-plus"></i> Добавить
+                </button>
+            </div>
+            <div class="goals-list" id="goalsList">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Загрузка целей...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-section">
+            <h2 class="section-title"><i class="fas fa-bolt"></i> Быстрые действия</h2>
+            <div class="action-buttons">
+                <button class="btn-primary" id="quickWorkoutBtn">
+                    <i class="fas fa-dumbbell"></i> Быстрая тренировка
+                </button>
+                <button class="btn-primary" id="addMealBtn">
+                    <i class="fas fa-utensils"></i> Добавить прием пищи
+                </button>
+                <button class="btn-primary" id="addMeasurementBtn">
+                    <i class="fas fa-weight"></i> Записать измерения
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="workoutModalOverlay" style="display: none;"></div>
+    <div class="modal" id="workoutModal" style="display: none;">
+        <div class="modal-header">
+            <h2>Добавить тренировку</h2>
+            <button class="modal-close" onclick="closeWorkoutModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="addWorkoutForm">
+                <div class="form-group">
+                    <label for="workoutName">Название тренировки *</label>
+                    <input type="text" id="workoutName" placeholder="Например: Тренировка груди" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="workoutDate">Дата *</label>
+                    <input type="date" id="workoutDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="workoutDuration">Длительность (минут)</label>
+                    <input type="number" id="workoutDuration" min="1" placeholder="60">
+                </div>
+                
+                <div class="form-group">
+                    <label for="workoutNotes">Заметки</label>
+                    <textarea id="workoutNotes" rows="3" placeholder="Как прошла тренировка..."></textarea>
+                </div>
+                
+                <div class="exercises-section">
+                    <h3>Упражнения</h3>
+                    <div id="exercisesContainer"></div>
+                    <button type="button" class="btn-secondary" onclick="addExercise()" style="margin-top: 10px;">
+                        <i class="fas fa-plus"></i> Добавить упражнение
+                    </button>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">Сохранить тренировку</button>
+                    <button type="button" class="btn-secondary" onclick="closeWorkoutModal()">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="goalModalOverlay" style="display: none;"></div>
+    <div class="modal" id="goalModal" style="display: none;">
+        <div class="modal-header">
+            <h2>Новая цель</h2>
+            <button class="modal-close" onclick="closeGoalModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="addGoalForm">
+                <div class="form-group">
+                    <label for="goalTitle">Название цели *</label>
+                    <input type="text" id="goalTitle" placeholder="Например: Похудеть до 80кг" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="goalDescription">Описание</label>
+                    <textarea id="goalDescription" rows="2" placeholder="Описание цели..."></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="goalType">Тип цели</label>
+                        <select id="goalType">
+                            <option value="weight">Вес</option>
+                            <option value="strength">Сила</option>
+                            <option value="endurance">Выносливость</option>
+                            <option value="measurements">Обхваты</option>
+                            <option value="other">Другое</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="goalUnit">Единица измерения</label>
+                        <select id="goalUnit">
+                            <option value="кг">кг</option>
+                            <option value="см">см</option>
+                            <option value="%">%</option>
+                            <option value="раз">раз</option>
+                            <option value="мин">мин</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="currentValue">Текущее значение</label>
+                        <input type="number" id="currentValue" step="0.1" placeholder="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="targetValue">Целевое значение *</label>
+                        <input type="number" id="targetValue" step="0.1" placeholder="100" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="goalDeadline">Срок выполнения</label>
+                    <input type="date" id="goalDeadline">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">Сохранить цель</button>
+                    <button type="button" class="btn-secondary" onclick="closeGoalModal()">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Модалка быстрой тренировки -->
+<div class="modal-overlay" id="quickWorkoutModalOverlay" style="display: none;"></div>
+<div class="modal" id="quickWorkoutModal" style="display: none;">
+    <div class="modal-header">
+        <h2>Быстрая тренировка</h2>
+        <button class="modal-close" onclick="closeQuickWorkoutModal()">×</button>
+    </div>
+    <div class="modal-body">
+        <form id="quickWorkoutForm">
+            <div class="form-group">
+                <label for="quickWorkoutName">Название *</label>
+                <input type="text" id="quickWorkoutName" placeholder="Утренняя разминка" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="quickDuration">Длительность (минут)</label>
+                <input type="number" id="quickDuration" min="5" max="180" value="30">
+            </div>
+            
+            <div class="form-group">
+                <label for="quickActivity">Тип активности</label>
+                <select id="quickActivity">
+                    <option value="cardio">Кардио</option>
+                    <option value="strength">Силовая</option>
+                    <option value="stretch">Растяжка</option>
+                    <option value="hiit">HIIT</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="quickNotes">Комментарий</label>
+                <textarea id="quickNotes" rows="2" placeholder="Самочувствие, интенсивность..."></textarea>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">Сохранить</button>
+                <button type="button" class="btn-secondary" onclick="closeQuickWorkoutModal()">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Модалка приема пищи -->
+<div class="modal-overlay" id="mealModalOverlay" style="display: none;"></div>
+<div class="modal" id="mealModal" style="display: none;">
+    <div class="modal-header">
+        <h2>Добавить прием пищи</h2>
+        <button class="modal-close" onclick="closeMealModal()">×</button>
+    </div>
+    <div class="modal-body">
+        <form id="addMealForm">
+            <div class="form-group">
+                <label for="mealName">Название блюда *</label>
+                <input type="text" id="mealName" placeholder="Овсянка с фруктами" required>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="mealType">Тип</label>
+                    <select id="mealType">
+                        <option value="breakfast">Завтрак</option>
+                        <option value="lunch">Обед</option>
+                        <option value="dinner">Ужин</option>
+                        <option value="snack">Перекус</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mealTime">Время</label>
+                    <input type="time" id="mealTime" value="13:00">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="mealCalories">Калории (ккал)</label>
+                <input type="number" id="mealCalories" min="0" step="1" placeholder="350">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="mealProtein">Белки (г)</label>
+                    <input type="number" id="mealProtein" min="0" step="0.1" placeholder="20">
+                </div>
+                
+                <div class="form-group">
+                    <label for="mealCarbs">Углеводы (г)</label>
+                    <input type="number" id="mealCarbs" min="0" step="0.1" placeholder="50">
+                </div>
+                
+                <div class="form-group">
+                    <label for="mealFat">Жиры (г)</label>
+                    <input type="number" id="mealFat" min="0" step="0.1" placeholder="10">
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">Сохранить</button>
+                <button type="button" class="btn-secondary" onclick="closeMealModal()">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Модалка измерений -->
+<div class="modal-overlay" id="measurementModalOverlay" style="display: none;"></div>
+<div class="modal" id="measurementModal" style="display: none;">
+    <div class="modal-header">
+        <h2>Запись измерений</h2>
+        <button class="modal-close" onclick="closeMeasurementModal()">×</button>
+    </div>
+    <div class="modal-body">
+        <form id="addMeasurementForm">
+            <div class="form-group">
+                <label for="measurementDate">Дата *</label>
+                <input type="date" id="measurementDate" required>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="measurementWeight">Вес (кг)</label>
+                    <input type="number" id="measurementWeight" step="0.1" placeholder="75.5">
+                </div>
+                
+                <div class="form-group">
+                    <label for="measurementFat">Жир (%)</label>
+                    <input type="number" id="measurementFat" step="0.1" placeholder="15">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="measurementChest">Грудь (см)</label>
+                    <input type="number" id="measurementChest" step="0.1" placeholder="100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="measurementWaist">Талия (см)</label>
+                    <input type="number" id="measurementWaist" step="0.1" placeholder="85">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="measurementHips">Бедра (см)</label>
+                    <input type="number" id="measurementHips" step="0.1" placeholder="95">
+                </div>
+                
+                <div class="form-group">
+                    <label for="measurementNeck">Шея (см)</label>
+                    <input type="number" id="measurementNeck" step="0.1" placeholder="40">
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">Сохранить</button>
+                <button type="button" class="btn-secondary" onclick="closeMeasurementModal()">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+    <div>
+
+    <script src="/static/js/utils.js"></script>
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/dashbord.js"></script>
+</body>
+</html>
