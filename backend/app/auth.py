@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 from typing import Optional
-import jwt
+from jose import jwt, JWTError  # УДАЛИ ЭТУ СТРОКУ если python-jose не установлен
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 import os
 from dotenv import load_dotenv
@@ -13,7 +13,7 @@ from backend.app import models
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("SECRET_KEY", "secret-key")
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -29,6 +29,8 @@ def get_password_hash(password):
 def authenticate_user(db: Session, username: str, password: str):
     user = db.query(models.User).filter(models.User.email == username).first()
     if not user:
+        user = db.query(models.User).filter(models.User.username == username).first()
+    if not user:
         return False
     if not verify_password(password, user.hashed_password):
         return False
@@ -42,6 +44,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
         expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     
     to_encode.update({"exp": expire, "sub": str(data.get("user_id"))})
+    
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
@@ -49,9 +52,7 @@ def verify_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except jwt.ExpiredSignatureError:
-        return None
-    except jwt.InvalidTokenError:
+    except JWTError:
         return None
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
